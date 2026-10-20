@@ -1,0 +1,14 @@
+{
+  "name": "maxwell-backend",
+  "version": "1.0.0",
+  "description": "Maxwell Equations and Calculus Backend with MathJax",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mathjax-node": "^2.1.1"
+  }
+}
