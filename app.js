@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const mjAPI = require('mathjax-node');
@@ -66,7 +65,18 @@ const equationsData = [
   }
 ];
 
-// API Endpoint
+// NCERT Integrals Example 13 Data[span_0](start_span)[span_0](end_span)
+const ncertExample13 = {
+  id: 13,
+  title: "Example 13",
+  description: "Evaluate the integral using partial fractions.",
+  problem: { latex: "\\int \\frac{3x - 2}{(x + 1)^2 (x + 3)} \\, dx" },
+  partialFraction: { latex: "\\frac{3x - 2}{(x + 1)^2 (x + 3)} = \\frac{A}{x + 1} + \\frac{B}{(x + 1)^2} + \\frac{C}{x + 3}" },
+  constants: { latex: "A = \\frac{11}{4}, \\quad B = -\\frac{5}{2}, \\quad C = -\\frac{11}{4}" },
+  solution: { latex: "\\int \\frac{3x - 2}{(x + 1)^2 (x + 3)} \\, dx = \\frac{11}{4} \\log |x + 1| + \\frac{5}{2(x + 1)} - \\frac{11}{4} \\log |x + 3| + C" }
+};
+
+// API Endpoint for Maxwell's Equations
 app.get('/api/maxwell-equations', async (req, res) => {
   try {
     const enrichedEquations = [];
@@ -85,6 +95,29 @@ app.get('/api/maxwell-equations', async (req, res) => {
     res.json({ success: true, equations: enrichedEquations });
   } catch (error) {
     console.error("Error processing MathJax:", error);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
+});
+
+// API Endpoint for NCERT Example 13[span_1](start_span)[span_1](end_span)
+app.get('/api/ncert-example13', async (req, res) => {
+  try {
+    const problemSvg = await latexToSvg(ncertExample13.problem.latex);
+    const pfSvg = await latexToSvg(ncertExample13.partialFraction.latex);
+    const constantsSvg = await latexToSvg(ncertExample13.constants.latex);
+    const solutionSvg = await latexToSvg(ncertExample13.solution.latex);
+
+    const enrichedExample = {
+      ...ncertExample13,
+      problem: { ...ncertExample13.problem, svg: problemSvg },
+      partialFraction: { ...ncertExample13.partialFraction, svg: pfSvg },
+      constants: { ...ncertExample13.constants, svg: constantsSvg },
+      solution: { ...ncertExample13.solution, svg: solutionSvg }
+    };
+
+    res.json({ success: true, example: enrichedExample });
+  } catch (error) {
+    console.error("Error processing MathJax for NCERT:", error);
     res.status(500).json({ success: false, error: "Internal Server Error" });
   }
 });
